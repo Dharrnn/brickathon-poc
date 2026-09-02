@@ -25,7 +25,7 @@ from scdi.zones import load_zones
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "data" / "demo"
 SEED = 42
-DAY = datetime(2024, 1, 15)
+DAY = datetime(2024, 1, 15)  # noqa: DTZ001 - naive is fine; used only for string formatting
 
 # Per-zone weather profile: (wind, gust, precip, wave) center values.
 WEATHER = {
