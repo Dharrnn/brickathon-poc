@@ -1,0 +1,41 @@
+# Unity Catalog Metric View — semantic layer for the Supply Chain Disruption POC.
+# Both the AI/BI dashboard (Tier 1) and the Genie space (Tier 2) sit on THIS,
+# so metric logic is defined once and answered consistently everywhere.
+#
+# Create in Databricks: Catalog Explorer -> Create -> Metric View, paste this,
+# or `databricks metric-views create`. Point `source` at your Gold table.
+version: 0.1
+
+source: workspace.supply_chain.disruption_risk
+
+filter: port_zone IS NOT NULL
+
+dimensions:
+  - name: Port Zone
+    expr: port_zone
+  - name: Risk Band
+    expr: risk_band
+  - name: Top Factor
+    expr: top_factor
+  - name: Vessel
+    expr: vessel_name
+  - name: Slowdown Near Port
+    expr: slowdown_flag
+  - name: Window Start
+    expr: window_start
+
+measures:
+  - name: Vessels Tracked
+    expr: COUNT(DISTINCT mmsi)
+  - name: High Risk Vessels
+    expr: COUNT_IF(risk_band = 'high')
+  - name: Medium Risk Vessels
+    expr: COUNT_IF(risk_band = 'medium')
+  - name: Vessels In Slowdown
+    expr: COUNT_IF(slowdown_flag = true)
+  - name: Avg Delay Score
+    expr: AVG(delay_score)
+  - name: Max Delay Score
+    expr: MAX(delay_score)
+  - name: Avg Weather Severity
+    expr: AVG(weather_severity)

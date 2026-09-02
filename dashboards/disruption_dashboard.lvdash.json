@@ -1,0 +1,150 @@
+{
+  "datasets": [
+    {
+      "name": "ds_vessels",
+      "displayName": "Disruption risk by vessel",
+      "queryLines": [
+        "SELECT vessel_name, port_zone, ROUND(avg_sog,1) AS avg_sog, weather_severity, delay_score, risk_band, top_factor, reasoning, recommended_action\n",
+        "FROM workspace.supply_chain.disruption_risk\n",
+        "ORDER BY delay_score DESC"
+      ]
+    },
+    {
+      "name": "ds_kpi_high",
+      "displayName": "KPI high risk vessels",
+      "queryLines": [
+        "SELECT COUNT_IF(risk_band = 'high') AS high_risk_vessels\n",
+        "FROM workspace.supply_chain.disruption_risk"
+      ]
+    },
+    {
+      "name": "ds_zone",
+      "displayName": "Port zone risk",
+      "queryLines": [
+        "SELECT port_zone, COUNT(DISTINCT mmsi) AS vessels, COUNT_IF(risk_band='high') AS high_risk_vessels, ROUND(AVG(delay_score),1) AS avg_delay_score\n",
+        "FROM workspace.supply_chain.disruption_risk\n",
+        "GROUP BY port_zone ORDER BY avg_delay_score DESC"
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "overview",
+      "displayName": "Disruption Overview",
+      "layout": [
+        {
+          "widget": {
+            "name": "kpi_high",
+            "queries": [
+              {
+                "name": "main",
+                "query": {
+                  "datasetName": "ds_kpi_high",
+                  "fields": [{ "name": "high_risk_vessels", "expression": "`high_risk_vessels`" }],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": { "fieldName": "high_risk_vessels", "displayName": "High risk vessels" }
+              }
+            }
+          },
+          "position": { "x": 0, "y": 0, "width": 2, "height": 4 }
+        },
+        {
+          "widget": {
+            "name": "filter_band",
+            "queries": [
+              {
+                "name": "filter",
+                "query": {
+                  "datasetName": "ds_vessels",
+                  "fields": [{ "name": "risk_band", "expression": "`risk_band`" }],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "filter-single-select",
+              "encodings": {
+                "fields": [{ "fieldName": "risk_band", "displayName": "Risk band", "queryName": "filter" }]
+              }
+            }
+          },
+          "position": { "x": 2, "y": 0, "width": 2, "height": 4 }
+        },
+        {
+          "widget": {
+            "name": "zone_bar",
+            "queries": [
+              {
+                "name": "main",
+                "query": {
+                  "datasetName": "ds_zone",
+                  "fields": [
+                    { "name": "port_zone", "expression": "`port_zone`" },
+                    { "name": "avg_delay_score", "expression": "`avg_delay_score`" }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": { "fieldName": "port_zone", "scale": { "type": "categorical" }, "displayName": "Port zone" },
+                "y": { "fieldName": "avg_delay_score", "scale": { "type": "quantitative" }, "displayName": "Avg delay score" }
+              }
+            }
+          },
+          "position": { "x": 0, "y": 4, "width": 3, "height": 6 }
+        },
+        {
+          "widget": {
+            "name": "vessel_table",
+            "queries": [
+              {
+                "name": "main",
+                "query": {
+                  "datasetName": "ds_vessels",
+                  "fields": [
+                    { "name": "vessel_name", "expression": "`vessel_name`" },
+                    { "name": "port_zone", "expression": "`port_zone`" },
+                    { "name": "delay_score", "expression": "`delay_score`" },
+                    { "name": "risk_band", "expression": "`risk_band`" },
+                    { "name": "top_factor", "expression": "`top_factor`" },
+                    { "name": "reasoning", "expression": "`reasoning`" },
+                    { "name": "recommended_action", "expression": "`recommended_action`" }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 1,
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  { "fieldName": "vessel_name", "displayName": "Vessel" },
+                  { "fieldName": "port_zone", "displayName": "Port zone" },
+                  { "fieldName": "delay_score", "displayName": "Delay score" },
+                  { "fieldName": "risk_band", "displayName": "Risk band" },
+                  { "fieldName": "top_factor", "displayName": "Top factor" },
+                  { "fieldName": "reasoning", "displayName": "Reasoning" },
+                  { "fieldName": "recommended_action", "displayName": "Recommended action" }
+                ]
+              }
+            }
+          },
+          "position": { "x": 3, "y": 4, "width": 3, "height": 6 }
+        }
+      ]
+    }
+  ]
+}

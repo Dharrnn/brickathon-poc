@@ -1,0 +1,37 @@
+[
+  {
+    "zone_id": "la_long_beach",
+    "name": "Los Angeles / Long Beach",
+    "center_lat": 33.74,
+    "center_lon": -118.22,
+    "radius_km": 40.0
+  },
+  {
+    "zone_id": "oakland",
+    "name": "Oakland / SF Bay",
+    "center_lat": 37.80,
+    "center_lon": -122.33,
+    "radius_km": 30.0
+  },
+  {
+    "zone_id": "seattle_tacoma",
+    "name": "Seattle / Tacoma",
+    "center_lat": 47.58,
+    "center_lon": -122.35,
+    "radius_km": 40.0
+  },
+  {
+    "zone_id": "ny_nj",
+    "name": "New York / New Jersey",
+    "center_lat": 40.66,
+    "center_lon": -74.05,
+    "radius_km": 40.0
+  },
+  {
+    "zone_id": "houston",
+    "name": "Houston / Galveston",
+    "center_lat": 29.72,
+    "center_lon": -94.98,
+    "radius_km": 50.0
+  }
+]

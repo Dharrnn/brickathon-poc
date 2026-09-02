@@ -1,0 +1,51 @@
+# Disruption-risk factor model — the single, configurable data structure that
+# decides the outcome. Change weights, thresholds, reasons, enable/disable a
+# factor, or add another of an existing `kind` WITHOUT touching Python. A new
+# `kind` needs a new evaluator in scdi/factors.py (the extension point).
+#
+# delay_score = sum(weight * contribution[0..1]) for each factor, capped at 100.
+# Keep the weights summing to 100 for an interpretable 0-100 score.
+version: 1
+
+bands:
+  high: 60      # delay_score >= 60
+  medium: 30    # 30 <= delay_score < 60  (else low)
+
+factors:
+  - id: slowdown
+    label: Vessel slowdown near port
+    kind: slowdown
+    weight: 40
+    params:
+      slow_sog_knots: 3.0
+    reason: "average speed {avg_sog:.1f} kn is below the {slow_sog_knots} kn slow threshold inside a port zone"
+
+  - id: weather
+    label: Severe marine weather
+    kind: weather_severity
+    weight: 40
+    reason: "marine weather severity is {weather_severity:.2f} (wind / gust / precipitation)"
+
+  - id: proximity
+    label: Busy port proximity
+    kind: in_zone
+    weight: 20
+    reason: "vessel is operating inside a monitored port zone"
+
+  # Example of adding a factor by config alone (evaluator already exists).
+  # Enable by giving it a weight and rebalancing the others to sum to 100.
+  # - id: congestion
+  #   label: Port zone congestion
+  #   kind: zone_congestion
+  #   weight: 0
+  #   params:
+  #     congestion_scale: 5   # this many slow vessels in the zone = full severity
+  #   reason: "{zone_slow_count:.0f} slow vessels sharing this port zone"
+
+actions:
+  high:
+    weather: "Consider rerouting or holding at anchorage until weather eases."
+    slowdown: "Expect berth delay; pre-stage cargo and confirm the slot with the terminal."
+    default: "Escalate: high delay risk — review schedule and notify downstream."
+  medium: "Monitor; moderate delay risk. Re-check on the next data refresh."
+  low: "No action; normal operations."
