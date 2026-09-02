@@ -47,6 +47,36 @@ def test_every_gold_row_has_reasoning_and_top_factor():
     assert gold["top_factor"].notna().all()
 
 
+def test_build_gold_handles_tz_naive_silver_timestamps():
+    # Reproduces Databricks: Spark's toPandas() yields tz-naive silver timestamps
+    # while weather ts_hour parses tz-aware. build_gold must not raise on compare.
+    silver = pd.DataFrame(
+        {
+            "mmsi": [366000001, 366000001],
+            "ts": pd.to_datetime(["2024-01-15T02:00:00", "2024-01-15T05:00:00"]),  # tz-naive
+            "lat": [33.72, 33.72],
+            "lon": [-118.25, -118.25],
+            "sog": [0.3, 0.4],
+            "vessel_name": ["ANCHORED ONE", "ANCHORED ONE"],
+            "port_zone": ["la_long_beach", "la_long_beach"],
+            "is_slow": [True, True],
+        }
+    )
+    weather = pd.DataFrame(
+        {
+            "zone_id": ["la_long_beach"],
+            "ts_hour": ["2024-01-15T03:00"],
+            "wind_speed": [38.0],
+            "wind_gust": [47.0],
+            "precipitation": [6.0],
+            "wave_height": [5.0],
+        }
+    )
+    gold = build_gold(silver, weather)
+    assert len(gold) == 1
+    assert gold.iloc[0]["risk_band"] == "high"
+
+
 def test_factor_breakdown_is_valid_json():
     import json
 

@@ -22,7 +22,7 @@ from scdi.weather import severity as weather_severity_fn
 
 def _weather_with_severity(weather: pd.DataFrame) -> pd.DataFrame:
     w = weather.copy()
-    w["ts_hour"] = pd.to_datetime(w["ts_hour"], errors="coerce", utc=True)
+    w["ts_hour"] = pd.to_datetime(w["ts_hour"], errors="coerce", utc=True).dt.tz_localize(None)
     waves = w["wave_height"] if "wave_height" in w.columns else [0.0] * len(w)
     w["severity"] = [
         weather_severity_fn(ws, wg, pr, wv)
@@ -53,6 +53,12 @@ def build_gold(
     in_zone = silver[silver["port_zone"].notna()]
     if in_zone.empty:
         return pd.DataFrame(columns=GOLD_COLUMNS)
+
+    # Normalise timestamps to tz-naive UTC. Spark's toPandas() returns tz-naive
+    # datetimes while the weather side is parsed tz-aware; comparing the two
+    # raises. Coercing both to naive UTC keeps local and Databricks consistent.
+    in_zone = in_zone.copy()
+    in_zone["ts"] = pd.to_datetime(in_zone["ts"], errors="coerce", utc=True).dt.tz_localize(None)
 
     weather = _weather_with_severity(weather)
 
