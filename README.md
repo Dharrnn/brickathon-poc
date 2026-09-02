@@ -54,7 +54,7 @@ uv run python scripts/run_local.py   # Bronze -> Silver -> Gold on data/sample/
    [ADR-003](docs/ADR-003-batch-predownloaded-data.md) for why data is
    pre-staged rather than pulled at runtime.
 2. Run the notebooks in order:
-   `00_ingest_bronze` → `10_build_silver` → `20_enrich_weather` →
+   `01_bronze_ingest` → `10_build_silver` → `20_enrich_weather` →
    `30_score_gold` → `40_genie_summaries`.
 3. Create the Metric View from `metrics/disruption_risk.metricview.yml`.
 4. Build the dashboard (`dashboards/`) and the Genie space
