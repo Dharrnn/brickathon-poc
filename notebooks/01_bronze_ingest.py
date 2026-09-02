@@ -74,7 +74,8 @@ bronze = (
     .option("pathGlobFilter", "*.csv")
     .csv(AIS_PATH)
     .withColumn("_ingest_ts", F.current_timestamp())
-    .withColumn("_source_file", F.input_file_name())
+    # Unity Catalog forbids input_file_name(); use the hidden _metadata column.
+    .withColumn("_source_file", F.col("_metadata.file_path"))
 )
 
 bronze.write.mode("overwrite").option("overwriteSchema", "true").saveAsTable(
