@@ -38,6 +38,8 @@ GOLD_COLUMNS: list[str] = [
     "window_start",
     "window_end",
     "avg_sog",
+    "avg_lat",
+    "avg_lon",
     "slowdown_flag",
     "weather_severity",
     "delay_score",

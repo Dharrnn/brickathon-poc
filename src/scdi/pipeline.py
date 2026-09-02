@@ -65,6 +65,8 @@ def build_gold(
     grouped = in_zone.groupby(["mmsi", "port_zone"], as_index=False).agg(
         vessel_name=("vessel_name", "first"),
         avg_sog=("sog", "mean"),
+        avg_lat=("lat", "mean"),
+        avg_lon=("lon", "mean"),
         window_start=("ts", "min"),
         window_end=("ts", "max"),
     )
@@ -90,6 +92,8 @@ def build_gold(
                 "window_start": r.window_start,
                 "window_end": r.window_end,
                 "avg_sog": round(float(r.avg_sog), 2),
+                "avg_lat": round(float(r.avg_lat), 5),
+                "avg_lon": round(float(r.avg_lon), 5),
                 "slowdown_flag": result.slowdown_flag,
                 "weather_severity": round(sev, 2),
                 "delay_score": result.delay_score,

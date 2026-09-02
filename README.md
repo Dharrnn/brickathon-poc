@@ -27,6 +27,12 @@ risk?"* and *"why is the Los Angeles zone flagged?"*.
 | Silver | `vessel_positions_quarantine` | Rejected rows + `quarantine_reason` |
 | Gold | `disruption_risk` | `vessel, port_zone, avg_sog, weather_severity, delay_score, risk_band, top_factor, reasoning, recommended_action, factor_breakdown, nl_summary` |
 
+## Presenting it
+
+Follow the [demo runbook](docs/DEMO.md) — one-time setup plus a 5–6 minute
+presentation script with the wow moments (explainable reasoning, the Genie
+conversational layer, and live-reconfigurable factors).
+
 ## Architecture
 
 See [docs/architecture.md](docs/architecture.md) for the full diagram and data

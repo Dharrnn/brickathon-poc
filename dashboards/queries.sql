@@ -48,3 +48,7 @@ ORDER BY vessels DESC;
 -- View 4: Slowdown vs weather scatter (optional) ------------------------------
 SELECT vessel_name, port_zone, avg_sog, weather_severity, delay_score, risk_band
 FROM disruption_risk;
+
+-- View 5: Vessel risk MAP (symbol map on avg_lat/avg_lon, colour by risk_band) -
+SELECT vessel_name, port_zone, avg_lat, avg_lon, risk_band, delay_score, top_factor
+FROM disruption_risk;
